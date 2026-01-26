@@ -30,12 +30,12 @@ export default function DocumentsPage() {
         return;
       }
 
-      const updatedImages = files.map((doc) => {
+      const updatedImages = (files.map((doc) => {
         if (doc._id === renameFile._id) {
           doc.name = newName;    
         }
         return doc;
-      });
+      }));
       setDoc(updatedImages)
       setRenameFile(null)
       setNewName("")
@@ -56,7 +56,7 @@ export default function DocumentsPage() {
           console.log("errror in fetching")
         }
         const data=await res.json()
-        setFiles(data)
+        setFiles(Array.isArray(data) ? data : [])
       }
       catch(e){
         console.log("error",e)
@@ -85,7 +85,7 @@ export default function DocumentsPage() {
         <p className="text-gray-400">No documents found</p>
         ):
         (files.map((file) => (
-          <div key={file.id} className="bg-white rounded-2xl p-5 relative">
+          <div key={file.id} className="bg-white rounded-2xl p-5 relative" onClick={()=>setPreview(file)}>
            <button
                 onClick={(e) => {
                   e.stopPropagation();
@@ -158,35 +158,38 @@ export default function DocumentsPage() {
             </div>
           </div>
         )))}
-      </div> {preview && (
-        <div
-          className="fixed inset-0 bg-black/70 flex items-center justify-center z-50"
-          onClick={() => setPreview(null)}
-        >
-          <div
-            className="relative max-w-4xl max-h-[90vh] w-full mx-4 bg-black rounded-xl p-4"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <button
-              onClick={() => setPreview(null)}
-              className="absolute top-3 right-3 text-white bg-black/60 rounded-full w-8 h-8 flex items-center justify-center cursor-pointer"
-            >
-              ✕
-            </button>
-
-            <img
-              src={preview.url}
-              alt={preview.name}
-              className="w-full h-[80vh] object-contain rounded-lg"
-            />
-
-            <p className="text-center text-sm text-gray-300 mt-2">
-              {preview.name}
-            </p>
-          </div>
-        </div>
+      </div> 
+      {preview &&  (
+  <div
+    className="fixed inset-0 bg-black/70 flex items-center justify-center z-50"
+    onClick={() => setPreview(null)}
+  >
+    <div
+      className="relative max-w-5xl max-h-[90vh] w-full mx-4 bg-black rounded-xl p-4"
+      onClick={(e) => e.stopPropagation()}
+    >
+      {/* Close button */}
+      <button
+        onClick={() => setPreview(null)}
+        className="absolute top-3 right-3 text-white bg-black/60 rounded-full w-8 h-8 flex items-center justify-center cursor-pointer"
+      >
+        ✕
+      </button>
         
-      )}{/* RENAME MODAL */}
+      {/* PDF iframe */}
+   <iframe
+  src={`https://docs.google.com/gview?url=${preview.url}&embedded=true`}
+  className="w-full h-[80vh] rounded-lg bg-white"
+  title="PDF Preview"
+/>
+
+      {/* File name */}
+      <p className="text-center text-sm text-gray-300 mt-2">
+        {preview.name}
+      </p>
+    </div>
+  </div>
+)}
       {renameFile && (
         <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50 text-black">
           <div className="bg-white rounded-xl p-6 w-[320px]">

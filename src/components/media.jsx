@@ -29,7 +29,8 @@ export default function MediaPage() {
           },
         });
         const data = await res.json();
-        setMedia(data);
+        console.log("API RESPONSE 👉", Array.isArray(data) ? data : []);
+        setMedia(Array.isArray(data) ? data : []);
       } catch (e) {
         console.log("error", e);
       } finally {
@@ -93,14 +94,10 @@ export default function MediaPage() {
           <option>Date Created (oldest)</option>
           <option>Name (A-Z)</option>
         </select>
-      </div>
-
+      </div>  
+    {console.log("media",media)}
       {/* MEDIA GRID */}
-      {loading ? (
-        <p className="text-gray-400">Loading...</p>
-      ) : media.length === 0 ? (
-        <p className="text-gray-400">No media found</p>
-      ) : (
+ 
         <div className="grid grid-cols-4 gap-6">
           {media.map((file) => (
             <div
@@ -185,7 +182,7 @@ export default function MediaPage() {
             </div>
           ))}
         </div>
-      )}
+    
 
       {/* 🎥 VIDEO PREVIEW MODAL */}
       {preview && (

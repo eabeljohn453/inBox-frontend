@@ -34,7 +34,9 @@ export default function DashboardLayout({
     { name: "Others", icon: Folder, href: "other" },
   ];
   const [user, setUser] = useState<{ name: string, email: string } | null>(null)
-
+ const [uploads, setUploads] = useState<
+    { id: string; name: string; progress: number }[]
+  >([]);
   useEffect(() => {
     const token = localStorage.getItem("token")
     if (!token) return
@@ -46,11 +48,9 @@ export default function DashboardLayout({
       .then((res) => res.json())
       .then((data) => setUser(data))
       .catch(() => setUser(null))
-  }, [])
+  }, [uploads])
   // ✅ Upload progress state
-  const [uploads, setUploads] = useState<
-    { id: string; name: string; progress: number }[]
-  >([]);
+ 
 
   // 🔐 Logout
   const handleLogout = () => {
@@ -101,6 +101,7 @@ export default function DashboardLayout({
       xhr.onload = () => {
         if (xhr.status === 201) {
           setUploads((prev) => prev.filter((u) => u.id !== uploadId));
+          window.dispatchEvent(new Event("files-updated"))
         }
       };
 

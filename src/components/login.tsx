@@ -10,13 +10,20 @@ export default function LoginPage() {
             const res=await fetch("http://localhost:5000/api/auth/login",{
                 method:"POST",
                 headers:{
-                    "Content-Type":"application/json",
+                  "Content-Type": "application/json", 
+              
                 },
                 body:JSON.stringify({email,password})
             })
-            const data =await res.json()
-            localStorage.setItem("token",data.token)
-            window.location.href="/document"
+            const data = await res.json();
+
+if (!res.ok) {
+  alert(data.message || "Login failed");
+  return;
+}
+
+localStorage.setItem("token", data.token);
+window.location.href = "/dashboard";
         }
         catch(e){
             console.log("error",e)

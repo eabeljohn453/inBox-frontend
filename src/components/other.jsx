@@ -1,167 +1,271 @@
+"use client";
+
+import { useEffect, useState } from "react";
 import Image from "next/image";
 import {
-  LayoutDashboard,
-  FileText,
-  Image as ImageIcon,
-  Video,
-  Folder,
-  Upload,
-  LogOut,
   MoreVertical,
+  Edit3,
+  Info,
+  ArrowDownToLine,
+  Trash,
   FileQuestion,
 } from "lucide-react";
 
+import DashboardLayout from "../app/layout/layout.tsx";
+
 export default function OthersPage() {
-  const sidebarItems = [
-    { name: "Dashboard", icon: LayoutDashboard },
-    { name: "Documents", icon: FileText },
-    { name: "Images", icon: ImageIcon },
-    { name: "Media", icon: Video },
-    { name: "Others", icon: Folder, active: true },
-  ];
+  const [files, setFiles] = useState([]);
+  const [preview,setPreview]=useState(null)
+  const [activeMenu, setActiveMenu] = useState(null);
+  const [renameFile, setRenameFile] = useState(null);
+  const [newName, setNewName] = useState("");
+  const [detailsFile, setDetailsFile] = useState(null);
+  const [deleteFile, setDeleteFile] = useState(null);
 
-  const otherFiles = [
-    { name: "App School.cc", size: "2 GB" },
-    { name: "BC company.dd", size: "2 GB" },
-    { name: "Because i love you.txt", size: "15 MB" },
-    { name: "CompanyANV.dd", size: "2 GB" },
-    { name: "company ABC.dd", size: "6 MB" },
-    { name: "My CV.df", size: "2 GB" },
-    { name: "My Jobs.co", size: "2 GB" },
-    { name: "Photoshop.cc", size: "2 GB" },
-    { name: "Pig Pig Pig.co", size: "2 GB" },
-    { name: "system.dd", size: "2 GB" },
-    { name: "school.dd", size: "15 MB" },
-    { name: "Water.dd", size: "2 GB" },
-  ];
+  /* ================= FETCH OTHERS FILES ================= */
+  useEffect(() => { 
+    async function fetchOthers() {
+      try {
+        const res = await fetch("http://localhost:5000/api/files/other", {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        });
+        console.log("erssdsdsfsrfraaf",res)
+        const data = await res.json();
+        console.log("ddddddaaaaaaaaaaaaata",data)
+        setFiles(data);
+      } catch (e) {
+        console.error("Fetch error:", e);
+      }
+    }
 
+    fetchOthers();
+  }, []);
+
+  /* ================= RENAME ================= */
+  const handleRename = async () => {
+    if (!newName.trim()) return;
+
+    try {
+      const res = await fetch(
+        `http://localhost:5000/api/files/${renameFile._id}/rename`,
+        {
+          method: "PATCH",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+          body: JSON.stringify({ newName }),
+        }
+      );
+
+      const data = await res.json();
+      if (!res.ok) return alert(data.message || "Rename failed");
+
+      setFiles((prev) =>
+        prev.map((f) =>
+          f._id === renameFile._id ? { ...f, name: newName } : f
+        )
+      );
+
+      setRenameFile(null);
+      setNewName("");
+    } catch (e) {
+      console.error("Rename error:", e);
+    }
+  };
+  console.log("fileeeeeeeee",files)
   return (
-    <div className="min-h-screen w-full bg-[#F5F7FB] flex">
-
-      {/* ================= SIDEBAR ================= */}
-      <aside className="w-[260px] bg-white px-6 py-8 flex flex-col justify-between border-r">
-
+    <DashboardLayout>
+      {/* HEADER */}
+    
+      <div className="flex items-center justify-between mb-6">
         <div>
-          {/* Logo */}
-          <div className="flex items-center gap-2 text-lg font-semibold text-[#FF7A7A] mb-10">
-            <div className="w-6 h-6 rounded-full bg-[#FF7A7A]" />
-                InBox
-          </div>
-
-          {/* Navigation */}
-          <nav className="space-y-2 text-sm">
-            {sidebarItems.map((item, i) => {
-              const Icon = item.icon;
-              return (
-                <div
-                  key={i}
-                  className={`flex items-center gap-3 px-4 py-3 rounded-xl cursor-pointer
-                  ${
-                    item.active
-                      ? "bg-[#FF7A7A] text-white"
-                      : "text-gray-500 hover:bg-gray-100"
-                  }`}
-                >
-                  <Icon size={18} />
-                  {item.name}
-                </div>
-              );
-            })}
-          </nav>
+          <h1 className="text-2xl font-semibold text-gray-800">Others</h1>
+          <p className="text-sm text-gray-400">Total files: {files.length}</p>
         </div>
+      </div>
 
-        {/* Illustration */}
-        <div className="relative h-[150px] w-full my-6">
-          <Image
-            src="/assets/file.svg"
-            alt="illustration"
-            fill
-            className="object-contain"
-          />
-        </div>
-
-        {/* User */}
-        <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-full bg-gray-300" />
-          <div className="text-xs">
-            <p className="font-medium text-gray-800">Adrian JSM</p>
-            <p className="text-gray-400">adrian@jsmastery.pro</p>
-          </div>
-        </div>
-      </aside>
-
-      {/* ================= MAIN ================= */}
-      <main className="flex-1 px-8 py-6">
-
-        {/* TOP BAR */}
-        <div className="flex items-center justify-between mb-8">
-          <input
-            placeholder="Search files"
-            className="w-[360px] px-5 py-3 rounded-full border bg-white outline-none"
-          />
-
-          <div className="flex items-center gap-4">
-            <button className="flex items-center gap-2 bg-[#FF7A7A] text-white px-6 py-3 rounded-full">
-              <Upload size={16} />
-              Upload
-            </button>
-
-            <button
-              title="Sign out"
-              className="w-10 h-10 flex items-center justify-center rounded-full bg-white border"
-            >
-              <LogOut size={18} className="text-gray-600" />
-            </button>
-          </div>
-        </div>
-
-        {/* HEADER */}
-        <div className="flex items-center justify-between mb-6">
-          <div>
-            <h1 className="text-2xl font-semibold text-gray-800">
-              Others
-            </h1>
-            <p className="text-sm text-gray-400">
-              Total: 12GB
-            </p>
-          </div>
-
-          <select className="px-4 py-2 rounded-lg border bg-white text-sm">
-            <option>Date Created (newest)</option>
-            <option>Date Created (oldest)</option>
-            <option>Name (A-Z)</option>
-          </select>
-        </div>
-
-        {/* OTHERS GRID */}
-        <div className="grid grid-cols-4 gap-6">
-          {otherFiles.map((file, i) => (
-            <div
-              key={i}
-              className="bg-white rounded-2xl p-5 relative"
-            >
-              <button className="absolute top-4 right-4 text-gray-400">
-                <MoreVertical size={16} />
+      {/* GRID */}
+      <div className="grid grid-cols-4 gap-6 ">
+         {files.length === 0 ? (
+          <p className="text-gray-400">No files found</p>
+        ) : (
+          files.map((file) => (
+            <div key={file._id} className="bg-white rounded-2xl p-5 relative cursor-pointer"  onClick={()=>{   setPreview(file)}}>
+              
+             
+              {/* MENU BUTTON */}
+              <button
+              
+                onClick={(e) => {
+                  e.stopPropagation();
+                  
+                
+                  setActiveMenu(activeMenu === file._id ? null : file._id);
+                }}
+                className="absolute top-4 right-4 text-gray-400 cursor-pointer"
+              >
+                <MoreVertical size={30} />
               </button>
 
-              {/* OTHERS ICON (Lucide) */}
+              {/* MENU */}
+              {activeMenu === file._id && (
+                <div className="absolute right-4 top-10 bg-white rounded-xl shadow-xl w-48 text-sm z-50 border ">
+                  <button
+                    onClick={() => {
+                      setRenameFile(file);
+                      setNewName(file.name);
+                      setActiveMenu(null);
+                    }}
+                    className="flex items-center gap-3 w-full px-4 py-2.5 hover:bg-gray-50 text-black cursor-pointer"
+                  >
+                    <Edit3 size={16} /> Rename
+                  </button>
+
+                  <button
+                    onClick={() => {
+                      setDetailsFile(file);
+                      setActiveMenu(null);
+                    }}
+                    className="flex items-center gap-3 w-full px-4 py-2.5 hover:bg-gray-50 text-black cursor-pointer"
+                  >
+                    <Info size={16} /> Details
+                  </button>
+
+                  <button
+                    onClick={() => window.open(file.url, "_blank")}
+                    className="flex items-center gap-3 w-full px-4 py-2.5 hover:bg-gray-50 text-black cursor-pointer"
+                  >
+                    <ArrowDownToLine size={16} /> Download
+                  </button>
+
+                  <button
+                    onClick={() => {
+                      setDeleteFile(file);
+                      setActiveMenu(null);
+                    }}
+                    className="flex items-center gap-3 w-full px-4 py-2.5 hover:bg-red-50 text-red-600 cursor-pointer "
+                  >
+                    <Trash size={16} /> Move to Trash
+                  </button>
+                </div>
+              )}
+
+              {/* ICON */}
               <div className="w-14 h-14 rounded-full bg-indigo-100 flex items-center justify-center mb-4">
-                <FileQuestion size={24} className="text-indigo-500" />
+                <FileQuestion size={26} className="text-indigo-500" />
               </div>
 
+              {/* NAME */}
               <p className="text-sm font-medium text-gray-800 truncate">
                 {file.name}
               </p>
 
+              {/* META */}
               <div className="flex items-center justify-between mt-2 text-xs text-gray-400">
-                <span>{file.size}</span>
-                <span>10:09pm, 10 Oct</span>
+                <span>{file.size} MB</span>
+                <span>{new Date(file.date).toLocaleDateString()}</span>
               </div>
             </div>
-          ))}
-        </div>
+          ))
+        )}
+        {/* PDF PREVIEW MODAL */}
+{preview &&  (
+  <div
+    className="fixed inset-0 bg-black/70 flex items-center justify-center z-50"
+    onClick={() => setPreview(null)}
+  >
+    <div
+      className="relative max-w-5xl max-h-[90vh] w-full mx-4 bg-black rounded-xl p-4"
+      onClick={(e) => e.stopPropagation()}
+    >
+      {/* Close button */}
+      <button
+        onClick={() => setPreview(null)}
+        className="absolute top-3 right-3 text-white bg-black/60 rounded-full w-8 h-8 flex items-center justify-center cursor-pointer"
+      >
+        ✕
+      </button>
 
-      </main>
+      {/* PDF iframe */}
+   <iframe
+  src={preview.url.replace("/upload/", "/upload/fl_attachment:false/")}
+  className="w-full h-[80vh] rounded-lg bg-white"
+  title="PDF Preview"
+/>
+
+
+
+      {/* File name */}
+      <p className="text-center text-sm text-gray-300 mt-2">
+        {preview.name}
+      </p>
     </div>
+  </div>
+)}
+
+      </div>
+
+      {/* ================= RENAME MODAL ================= */}
+      {renameFile && (
+        <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
+          <div className="bg-white rounded-xl p-6 w-[320px]">
+            <h3 className="font-semibold mb-4 text-black">Rename</h3>
+
+            <input
+              value={newName}
+              onChange={(e) => setNewName(e.target.value)}
+              className="w-full border rounded-lg px-4 py-2 mb-4 text-black"
+            />
+
+            <div className="flex justify-end gap-3">
+              <button
+                onClick={() => setRenameFile(null)}
+                className="bg-gray-400 text-white px-4 py-2 rounded-lg cursor-pointer"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleRename}
+                className="bg-[#FF7A7A] text-white px-4 py-2 rounded-lg cursor-pointer"
+              >
+                Save
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ================= DETAILS MODAL ================= */}
+      {detailsFile && (
+        <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
+          <div className="bg-white rounded-xl p-6 w-[340px]">
+            <h3 className="font-semibold mb-4">Details</h3>
+            <p className="text-sm">
+              <b>Name:</b> {detailsFile.name}
+            </p>
+            <p className="text-sm">
+              <b>Size:</b>{" "}
+              {(detailsFile.size / 1024 / 1024).toFixed(2)} MB
+            </p>
+            <p className="text-sm">
+              <b>Date:</b>{" "}
+              {new Date(detailsFile.date).toLocaleString()}
+            </p>
+
+            <div className="flex justify-end mt-4">
+              <button
+                onClick={() => setDetailsFile(null)}
+                className="bg-gray-400 text-white px-4 py-2 rounded-lg"
+              >
+                Close
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+    </DashboardLayout>
   );
 }

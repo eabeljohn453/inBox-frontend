@@ -54,6 +54,9 @@ export default function DashboardPage() {
 
   useEffect(() => {
     fetchDetail();
+    const refresh=()=>fetchDetail()
+    window.addEventListener("files-updated",refresh)
+    return()=>(window.addEventListener("files-updated",refresh))
   }, []);
   if (loading) {
     return (

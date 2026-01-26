@@ -14,8 +14,7 @@ import DashboardLayout from "../app/layout/layout.tsx";
 import { useEffect, useState } from "react";
 
 export default function ImagesPage() {
-  const [images, setImages] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [images, setImages] = useState([]); 
   const [search, setSearch] = useState("");
   // preview image
   const [preview, setPreview] = useState(null);
@@ -26,25 +25,25 @@ export default function ImagesPage() {
   const [detailsFile, setDetailsFile] = useState(null);
   const [deleteFile, setDeleteFile] = useState(null);
   const [newName, setNewName] = useState("");
-
+  const [page,setPage] = useState(1)
   useEffect(() => {
     async function fetchImages() {
       try {
-        const res = await fetch("http://localhost:5000/api/files/images", {
+        const res = await fetch(`http://localhost:5000/api/files/images?page=${page}&limit=6`, {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("token")}`,
           },
         });
         const data = await res.json();
-        setImages(Array.isArray(data) ? data : []);
+        setImages((prev)=>[...prev,...data]);
+        setPage(prev=>prev+1)
       } catch (e) {
         console.log("error found", e);
-      } finally {
-        setLoading(false);
-      }
+      } 
     }
-    fetchImages();
-  }, []);
+ fetchImages(); 
+  }, [page]);
+  
     useEffect(() => {
     const esc = (e) => e.key === "Escape" && setPreview(null);
     window.addEventListener("keydown", esc);
@@ -135,10 +134,7 @@ export default function ImagesPage() {
         </select>
       </div>
 
-      {/* IMAGE GRID */}
-      {loading ? (
-        <p className="text-gray-400">Loading...</p>
-      ) : images.length === 0 ? (
+      { images.length === 0 ? (
         <p className="text-gray-400">No images found</p>
       ) : (
         <div className="grid grid-cols-4 gap-6">
@@ -231,7 +227,7 @@ export default function ImagesPage() {
             </div>
           ))}
         </div>
-      )}
+      ) }
 
       {/* IMAGE PREVIEW MODAL */}
       {preview && (
