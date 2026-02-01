@@ -27,23 +27,29 @@ export default function ImagesPage() {
   const [newName, setNewName] = useState("");
   const [page,setPage] = useState(1)
   useEffect(() => {
-    async function fetchImages() {
-      try {
-        const res = await fetch(`http://localhost:5000/api/files/images?page=${page}&limit=6`, {
+  async function fetchImages() {
+    try {
+      const res = await fetch(
+        `http://localhost:5000/api/files/images?page=${page}&limit=6`,
+        {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("token")}`,
           },
-        });
-        const data = await res.json();
-        setImages((prev)=>[...prev,...data]);
-        setPage(prev=>prev+1)
-      } catch (e) {
-        console.log("error found", e);
-      } 
+        }
+      );
+      const data = await res.json();
+ setImages(images.map(img =>
+  img._id === renameFile._id
+    ? { ...img, name: newName }
+    : img
+));
+    } catch (e) {
+      console.log("error found", e);
     }
- fetchImages(); 
-  }, [page]);
-  
+  }
+
+  fetchImages();
+}, [page]);
     useEffect(() => {
     const esc = (e) => e.key === "Escape" && setPreview(null);
     window.addEventListener("keydown", esc);

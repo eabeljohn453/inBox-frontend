@@ -34,7 +34,7 @@ export default function OthersPage() {
         console.log("erssdsdsfsrfraaf",res)
         const data = await res.json();
         console.log("ddddddaaaaaaaaaaaaata",data)
-        setFiles(data);
+     setFiles(Array.isArray(data) ? data : data.files || []);
       } catch (e) {
         console.error("Fetch error:", e);
       }
