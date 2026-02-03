@@ -10,9 +10,7 @@ export default function RegisterPage() {
         try{
             const res=await fetch("http://localhost:5000/api/auth/register",{
                 method:"POST",
-                headers:{
-                    "Content-Type":"application/json"
-                },
+                credentials:"include",
                 body:JSON.stringify({name,email,password})
             })
             const data=await res.json()
@@ -24,8 +22,7 @@ export default function RegisterPage() {
     }
   return (
     <div className="min-h-screen w-full flex">
-      
-      {/* LEFT SIDE */}
+       
       <div className="w-1/2 bg-[#FF7A7A] text-white px-16 py-12 flex flex-col justify-between">
         <div className="flex items-center gap-2 text-xl font-semibold">
           <div className="w-6 h-6 bg-white rounded-full" />
@@ -50,8 +47,7 @@ export default function RegisterPage() {
           />
         </div>
       </div>
-
-      {/* RIGHT SIDE */}
+ 
       <div className="w-1/2 bg-white flex items-center justify-center">
         <div className="w-[400px]">
           <h2 className="text-3xl font-semibold text-gray-800 mb-8 text-center">

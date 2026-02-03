@@ -6,23 +6,25 @@ export default function LoginPage() {
     const [email,setEmail]=useState("")
     const [password,setPassword]=useState("")
     const handleLogin=async()=>{
+
+  console.log("Sending login data:", { email, password });
         try{
             const res=await fetch("http://localhost:5000/api/auth/login",{
                 method:"POST",
-                headers:{
-                  "Content-Type": "application/json", 
+                credentials:"include", 
               
-                },
+      headers: { "Content-Type": "application/json" },
                 body:JSON.stringify({email,password})
             })
             const data = await res.json();
+
+console.log("Server response:", data);
 
 if (!res.ok) {
   alert(data.message || "Login failed");
   return;
 }
-
-localStorage.setItem("token", data.token);
+ 
 window.location.href = "/dashboard";
         }
         catch(e){
@@ -75,7 +77,9 @@ window.location.href = "/dashboard";
             type="email"
             placeholder="Enter your Email"
             value={email}
-            onChange={(e)=>setEmail(e.target.value)}
+            onChange={(e)=>{setEmail(e.target.value)
+               console.log("Email:", e.target.value); }
+            }
             className="w-full px-4 py-3 text-black rounded-lg border border-gray-200 focus:outline-none mb-4 focus:ring-2 focus:ring-[#FF7A7A]"
           />
           <input

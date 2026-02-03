@@ -24,9 +24,8 @@ export default function MediaPage() {
     async function fetchMedia() {
       try {
         const res = await fetch("http://localhost:5000/api/files/videos", {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-          },
+          method:"GET",
+          credentials:"include"
         });
         const data = await res.json();
         console.log("API RESPONSE 👉", Array.isArray(data) ? data : []);
@@ -44,10 +43,7 @@ export default function MediaPage() {
     const res=await fetch(
         `http://localhost:5000/api/files/${renameFile._id}/rename`,{
           method:"PATCH",
-          headers:{
-            "content-type":"application/json",
-            Authorization:`Bearer ${localStorage.getItem("token")}`
-          },
+          credentials:"include",
           body:JSON.stringify({newName})
       
         })

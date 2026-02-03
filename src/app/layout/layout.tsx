@@ -1,6 +1,5 @@
 "use client";
-import { User } from "lucide-react";
-
+import { User } from "lucide-react"; 
 import Image from "next/image";
 import {
   LayoutDashboard,
@@ -37,28 +36,21 @@ export default function DashboardLayout({
  const [uploads, setUploads] = useState<
     { id: string; name: string; progress: number }[]
   >([]);
-  useEffect(() => {
-    const token = localStorage.getItem("token")
-    if (!token) return
+  useEffect(() => {  
     fetch("http://localhost:5000/api/auth/get", {
-      headers: {
-        Authorization: `Bearer ${token}`
-      },
-    })
+  method: "GET",
+  credentials: "include" 
+})
       .then((res) => res.json())
       .then((data) => setUser(data))
       .catch(() => setUser(null))
-  }, [uploads])
-  // ✅ Upload progress state
+  }, []) 
  
-
-  // 🔐 Logout
+ 
   const handleLogout = () => {
-    localStorage.removeItem("token");
+     
     router.push("/login");
-  };
-
-  // 📤 Upload with progress
+  }; 
   const handleUpload = () => {
     const input = document.createElement("input");
     input.type = "file";
@@ -79,13 +71,7 @@ export default function DashboardLayout({
 
       const xhr = new XMLHttpRequest();
       xhr.open("POST", "http://localhost:5000/api/files/upload");
-
-      xhr.setRequestHeader(
-        "Authorization",
-        `Bearer ${localStorage.getItem("token")}`
-      );
-
-      // 📊 Progress
+xhr.withCredentials = true;  
       xhr.upload.onprogress = (e) => {
         if (!e.lengthComputable) return;
         const percent = Math.round((e.loaded / e.total) * 100);
@@ -96,8 +82,7 @@ export default function DashboardLayout({
           )
         );
       };
-
-      // ✅ Done
+ 
       xhr.onload = () => {
         if (xhr.status === 201) {
           setUploads((prev) => prev.filter((u) => u.id !== uploadId));
@@ -112,8 +97,7 @@ export default function DashboardLayout({
   };
 
   return (
-    <div className="min-h-screen w-full bg-[#F5F7FB] flex">
-      {/* ========== SIDEBAR ========== */}
+    <div className="min-h-screen w-full bg-[#F5F7FB] flex"> 
       <aside className="w-[260px] bg-white px-6 py-8 flex flex-col justify-between border-r">
         <div>
           <div className="flex items-center gap-2 text-lg font-semibold text-[#FF7A7A] mb-10">
@@ -165,10 +149,9 @@ export default function DashboardLayout({
           </div>
         </div>
       </aside>
-
-      {/* ========== MAIN AREA ========== */}
+ 
       <main className="flex-1 px-8 py-6">
-        {/* TOP BAR */}
+  
         <div className="flex items-center justify-between mb-8">
           <input
             placeholder="Search files"
@@ -193,8 +176,7 @@ export default function DashboardLayout({
             </button>
           </div>
         </div>
-
-        {/* 🔄 IN PROGRESS UPLOADS */}
+ 
         {uploads.length > 0 && (
           <div className="mb-6 bg-white rounded-xl p-4">
             <h4 className="text-sm font-semibold mb-3">In Progress</h4>
@@ -221,8 +203,7 @@ export default function DashboardLayout({
             </div>
           </div>
         )}
-
-        {/* 🔥 PAGE CONTENT */}
+ 
         {children}
       </main>
     </div>

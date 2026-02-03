@@ -14,43 +14,39 @@ import DashboardLayout from "../app/layout/layout.tsx";
 import { useEffect, useState } from "react";
 
 export default function ImagesPage() {
-  const [images, setImages] = useState([]); 
+  const [images, setImages] = useState([]);
   const [search, setSearch] = useState("");
-  // preview image
+ 
   const [preview, setPreview] = useState(null);
-
-  // menu + modals
+ 
   const [activeMenu, setActiveMenu] = useState(null);
   const [renameFile, setRenameFile] = useState(null);
   const [detailsFile, setDetailsFile] = useState(null);
   const [deleteFile, setDeleteFile] = useState(null);
   const [newName, setNewName] = useState("");
-  const [page,setPage] = useState(1)
+  const [page, setPage] = useState(1)
   useEffect(() => {
-  async function fetchImages() {
-    try {
-      const res = await fetch(
-        `http://localhost:5000/api/files/images?page=${page}&limit=6`,
-        {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-          },
-        }
-      );
-      const data = await res.json();
- setImages(images.map(img =>
-  img._id === renameFile._id
-    ? { ...img, name: newName }
-    : img
-));
-    } catch (e) {
-      console.log("error found", e);
+    async function fetchImages() {
+      try {
+        const res = await fetch(
+          `http://localhost:5000/api/files/images`,
+          {
+            method: "GET",
+            credentials: "include"
+          }
+        );
+        const data = await res.json();
+        console.log("dat",data)
+        setImages(data)
+      } catch (e) {
+        console.log("error found", e);
+      }
     }
-  }
 
-  fetchImages();
-}, [page]);
-    useEffect(() => {
+    fetchImages();
+  }, [page]);
+  console.log("images", images)
+  useEffect(() => {
     const esc = (e) => e.key === "Escape" && setPreview(null);
     window.addEventListener("keydown", esc);
     return () => window.removeEventListener("keydown", esc);
@@ -60,14 +56,11 @@ export default function ImagesPage() {
     if (!newName.trim()) return;
 
     try {
-        const res = await fetch(
-          `http://localhost:5000/api/files/${renameFile._id}/rename`,
+      const res = await fetch(
+        `http://localhost:5000/api/files/${renameFile._id}/rename`,
         {
           method: "PATCH",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-          },
+          credentials: "include",
           body: JSON.stringify({ newName }),
         }
       );
@@ -81,7 +74,7 @@ export default function ImagesPage() {
 
       const updatedImages = images.map((img) => {
         if (img._id === renameFile._id) {
-          img.name = newName;    
+          img.name = newName;
         }
         return img;
       });
@@ -101,9 +94,7 @@ export default function ImagesPage() {
 
       const res = await fetch(`http://localhost:5000/api/files/${deleteFile._id}`, {
         method: "DELETE",
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("token")}`
-        }
+        credentials: "include"
       })
       console.log("error", res)
       if (!res.ok) {
@@ -140,7 +131,7 @@ export default function ImagesPage() {
         </select>
       </div>
 
-      { images.length === 0 ? (
+      {images.length === 0 ? (
         <p className="text-gray-400">No images found</p>
       ) : (
         <div className="grid grid-cols-4 gap-6">
@@ -233,9 +224,8 @@ export default function ImagesPage() {
             </div>
           ))}
         </div>
-      ) }
+      )}
 
-      {/* IMAGE PREVIEW MODAL */}
       {preview && (
         <div
           className="fixed inset-0 bg-black/70 flex items-center justify-center z-50"
@@ -281,7 +271,7 @@ export default function ImagesPage() {
               <button className="bg-gray-400 text-white px-4 py-2 rounded-lg cursor-pointer hover:bg-black/40" onClick={() => setRenameFile(null)}>Cancel</button>
               <button
                 className="bg-[#FF7A7A] text-white px-4 py-2 rounded-lg cursor-pointer hover:bg-red/40"
-                onClick={handleRename}  
+                onClick={handleRename}
               >
                 Save
               </button>

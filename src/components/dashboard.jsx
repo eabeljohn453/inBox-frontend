@@ -30,9 +30,8 @@ export default function DashboardPage() {
  const fetchDetail = async () => {
     try {
       const res = await fetch("http://localhost:5000/api/dashboard", {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
-        },
+        method:"GET",
+        credentials:"include"
       });
 
       const data = await res.json();
@@ -106,8 +105,7 @@ export default function DashboardPage() {
 
 
           <div className="grid grid-cols-2 gap-6   gap-10">
-
-            {/* DOCUMENTS */}
+ 
             <div className="bg-white rounded-2xl p-6 relative">
               <div className="w-12 h-12 rounded-full flex items-center justify-center absolute -top-6 left-6 bg-red-100">
                 <FileText size={20} className="text-red-500" />
@@ -127,7 +125,7 @@ export default function DashboardPage() {
               </div>
             </div>
 
-            {/* IMAGES */}
+  
             <div className="bg-white rounded-2xl p-6 relative">
               <div className="w-12 h-12 rounded-full flex items-center justify-center absolute -top-6 left-6 bg-blue-100">
                 <ImageIcon size={20} className="text-blue-500" />
@@ -146,7 +144,7 @@ export default function DashboardPage() {
                 <p className="text-xs text-gray-500 mt-1">{images.date}</p>
               </div>
             </div> 
-            {/* VIDEO / AUDIO */}
+  
             <div className="bg-white rounded-2xl p-6 relative">
               <div className="w-12 h-12 rounded-full flex items-center justify-center absolute -top-6 left-6 bg-emerald-100">
                 <Video size={20} className="text-emerald-500" />
@@ -166,7 +164,7 @@ export default function DashboardPage() {
               </div>
             </div>
 
-            {/* OTHERS */}
+   
             <div className="bg-white rounded-2xl p-6 relative">
               <div className="w-12 h-12 rounded-full flex items-center justify-center absolute -top-6 left-6 bg-purple-100">
                 <PieChartIcon size={20} className="text-purple-500" />
@@ -191,7 +189,7 @@ export default function DashboardPage() {
 
         </div>
 
-        {/* ================= RIGHT ================= */}
+ 
         <div className="bg-white rounded-2xl p-6">
           <h4 className="font-semibold text-gray-800 mb-6">
             Recent files uploaded
@@ -199,7 +197,7 @@ export default function DashboardPage() {
           {recent.length === 0 ? (<p className="text-black">no upload</p>) : (
             <ul className="space-y-4 text-sm">
               {recent.map((file) => (
-                <li key={file.id} className="flex items-center justify-between">
+                <li key={file._id} className="flex items-center justify-between">
                   <div className="flex items-center gap-3">
                     <div className="w-9 h-9 rounded-full overflow-hidden bg-gray-100 flex items-center justify-center">
   {(() => {

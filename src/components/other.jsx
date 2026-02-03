@@ -21,15 +21,12 @@ export default function OthersPage() {
   const [newName, setNewName] = useState("");
   const [detailsFile, setDetailsFile] = useState(null);
   const [deleteFile, setDeleteFile] = useState(null);
-
-  /* ================= FETCH OTHERS FILES ================= */
+ 
   useEffect(() => { 
     async function fetchOthers() {
       try {
         const res = await fetch("http://localhost:5000/api/files/other", {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-          },
+          credentials:"include"
         });
         console.log("erssdsdsfsrfraaf",res)
         const data = await res.json();
@@ -42,8 +39,7 @@ export default function OthersPage() {
 
     fetchOthers();
   }, []);
-
-  /* ================= RENAME ================= */
+ 
   const handleRename = async () => {
     if (!newName.trim()) return;
 
@@ -52,10 +48,7 @@ export default function OthersPage() {
         `http://localhost:5000/api/files/${renameFile._id}/rename`,
         {
           method: "PATCH",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-          },
+          credentials:"include",
           body: JSON.stringify({ newName }),
         }
       );
@@ -77,8 +70,7 @@ export default function OthersPage() {
   };
   console.log("fileeeeeeeee",files)
   return (
-    <DashboardLayout>
-      {/* HEADER */}
+    <DashboardLayout> 
     
       <div className="flex items-center justify-between mb-6">
         <div>
@@ -86,17 +78,14 @@ export default function OthersPage() {
           <p className="text-sm text-gray-400">Total files: {files.length}</p>
         </div>
       </div>
-
-      {/* GRID */}
+ 
       <div className="grid grid-cols-4 gap-6 ">
          {files.length === 0 ? (
           <p className="text-gray-400">No files found</p>
         ) : (
           files.map((file) => (
             <div key={file._id} className="bg-white rounded-2xl p-5 relative cursor-pointer"  onClick={()=>{   setPreview(file)}}>
-              
-             
-              {/* MENU BUTTON */}
+               
               <button
               
                 onClick={(e) => {
@@ -109,8 +98,7 @@ export default function OthersPage() {
               >
                 <MoreVertical size={30} />
               </button>
-
-              {/* MENU */}
+ 
               {activeMenu === file._id && (
                 <div className="absolute right-4 top-10 bg-white rounded-xl shadow-xl w-48 text-sm z-50 border ">
                   <button
@@ -170,8 +158,7 @@ export default function OthersPage() {
               </div>
             </div>
           ))
-        )}
-        {/* PDF PREVIEW MODAL */}
+        )} 
 {preview &&  (
   <div
     className="fixed inset-0 bg-black/70 flex items-center justify-center z-50"
@@ -180,16 +167,14 @@ export default function OthersPage() {
     <div
       className="relative max-w-5xl max-h-[90vh] w-full mx-4 bg-black rounded-xl p-4"
       onClick={(e) => e.stopPropagation()}
-    >
-      {/* Close button */}
+    > 
       <button
         onClick={() => setPreview(null)}
         className="absolute top-3 right-3 text-white bg-black/60 rounded-full w-8 h-8 flex items-center justify-center cursor-pointer"
       >
         ✕
       </button>
-
-      {/* PDF iframe */}
+ 
    <iframe
   src={preview.url.replace("/upload/", "/upload/fl_attachment:false/")}
   className="w-full h-[80vh] rounded-lg bg-white"
@@ -197,8 +182,7 @@ export default function OthersPage() {
 />
 
 
-
-      {/* File name */}
+ 
       <p className="text-center text-sm text-gray-300 mt-2">
         {preview.name}
       </p>
@@ -206,9 +190,7 @@ export default function OthersPage() {
   </div>
 )}
 
-      </div>
-
-      {/* ================= RENAME MODAL ================= */}
+      </div> 
       {renameFile && (
         <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
           <div className="bg-white rounded-xl p-6 w-[320px]">
@@ -236,9 +218,7 @@ export default function OthersPage() {
             </div>
           </div>
         </div>
-      )}
-
-      {/* ================= DETAILS MODAL ================= */}
+      )} 
       {detailsFile && (
         <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
           <div className="bg-white rounded-xl p-6 w-[340px]">

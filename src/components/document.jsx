@@ -17,10 +17,7 @@ export default function DocumentsPage() {
     try{
       const res=await fetch(   `http://localhost:5000/api/files/${renameFile._id}/rename`,{
         method:"PATCH",
-        headers:{
-          "Content-Type":"application/json",
-          Authorization:`Bearer ${localStorage.getItem("token")}`
-        },
+        credentials:"include",
         body:JSON.stringify({newName})
       })
         const data=await res.json()
@@ -36,7 +33,7 @@ export default function DocumentsPage() {
         }
         return doc;
       }));
-      setDoc(updatedImages)
+      setFiles(updatedImages)
       setRenameFile(null)
       setNewName("")
     }
@@ -48,9 +45,8 @@ export default function DocumentsPage() {
     async  function fetchFiles(){
       try{
         const res=await fetch("http://localhost:5000/api/files/document",{
-          headers:{
-            Authorization:`Bearer ${localStorage.getItem("token")}`
-          }
+          method:"GET",
+          credentials:"include"
         })
         if(!res.ok){
           console.log("errror in fetching")
